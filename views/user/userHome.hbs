@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - Welcome</title>
+  <link rel="stylesheet" href="/styles/userHome.css"> 
+</head>
+<body>
+
+  <section class="dashboard-container">
+    <h1>Welcome back</h1>
+    <p class="subtitle">Here's your market update:</p>
+
+    <div class="market-section">
+      <h2>🌐 Forex & Stock Prices</h2>
+      <ul class="market-list">
+  <li id="forex-usdinr">Loading USD/INR...</li>
+</ul>
+    </div>
+
+    <div class="news-section">
+      <h2>📰 Latest News</h2>
+      <ul class="news-list">
+        <li>Nifty 50 reaches all-time high 📈</li>
+        <li>RBI announces new forex regulations 🏦</li>
+        <li>Bitcoin faces resistance at $63,000 💰</li>
+      </ul>
+    </div>
+
+    <div class="quick-actions">
+      <button class="logout-btn">View Portfolio</button>
+      <button class="logout-btn">Trade Now</button>
+      <button class="logout-btn" onclick="window.location.href='/user/logout'">Logout</button>
+    </div>
+  </section>
+  <script>
+function fetchMultipleForexData() {
+  const apiKey = '42645f5942db44eaa7b84d0fe03170dc'; 
+
+  const symbols = [
+    { displaySymbol: "USDINR", fetchSymbol: "USD/INR", elementId: "forex-usdinr" },
+  ];
+
+  symbols.forEach(item => {
+    const url = `https://api.twelvedata.com/price?symbol=${encodeURIComponent(item.fetchSymbol)}&apikey=${apiKey}`;
+
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        console.log('Data:', data);
+        if (data.price) {
+          updateForexPrice(item.elementId, item.displaySymbol, data.price); // Use display symbol
+        } else {
+          document.getElementById(item.elementId).innerText = `Error loading ${item.displaySymbol}: ${data.message || 'No price'}`;
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching', item.fetchSymbol, error);
+        document.getElementById(item.elementId).innerText = `Error loading ${item.displaySymbol}`;
+      });
+  });
+}
+
+function updateForexPrice(elementId, displaySymbol, price) {
+  const element = document.getElementById(elementId);
+  if (element) {
+    element.innerHTML = `${displaySymbol}: ${price}`;
+  }
+}
+
+fetchMultipleForexData();
+</script>
+</body>
+</html>
